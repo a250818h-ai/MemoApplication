@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navbar Demo</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* スムーズスクロール */
+        html {
+            scroll-behavior: smooth;
+        }
+        /* Navbar に隠れないようにする */
+        section {
+            scroll-margin-top: 80px;
+            min-height: 500px;
+        }
+        /* サジェスト用ドロップダウンのカスタム設定 */
+        .search-suggestions {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        /* ===== スプラッシュスクリーン用のスタイル ===== */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
+        }
+
+        #splash-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .splash-logo {
+            max-width: 80%;
+            max-height: 80vh;
+            animation: bounceIn 1s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* ===== ホーム画面の背景フルロゴ用のスタイル ===== */
+        #home {
+            position: relative;
+            overflow: hidden;
+        }
+
+        #home::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('Gemini_Generated_Image_m6iof8m6iof8m6io.png');
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: contain;
+            opacity: 0.05;
+            z-index: 0;
+        }
+
+        #home .container {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="splash-screen">
+        <img src="Gemini_Generated_Image_m6iof8m6iof8m6io.png" alt="ちょこっとモメっと ロゴ" class="splash-logo">
+    </div>
+    <header class="container mt-3 mb-3 text-center">
+        <h1>Memo Application Web site Version</h1>
+    </header>
+
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark sticky-top">
+        <div class="container">
+            <button class="navbar-toggler d-block me-3 border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#appMenuOffcanvas" aria-controls="appMenuOffcanvas">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <a class="navbar-brand" href="#">
+                My Website
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarMenu">
+                <div class="navbar-nav me-auto">
+                    <a class="nav-link" href="#home">Home</a>
+                    <a class="nav-link" href="#about">About</a>
+                    <a class="nav-link" href="#memo">Memo</a>
+                    <a class="nav-link" href="#note">Note</a>
+                    <a class="nav-link" href="#file">File</a>
+                    <a class="nav-link" href="#trash">Trash</a>
+                    <a class="nav-link" href="#timeline">Timeline</a>
+                    <a class="nav-link" href="#gallery">Gallery</a>
+                </div>
+                <form class="d-flex">
+                    <input class="form-control me-2" type="search" placeholder="Search">
+                    <button class="btn btn-outline-light" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="appMenuOffcanvas" aria-labelledby="appMenuOffcanvasLabel">
+        <div class="offcanvas-header border-bottom border-secondary">
+            <h5 class="offcanvas-title" id="appMenuOffcanvasLabel">App Menu</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="navbar-nav">
+                <a class="nav-link fs-5 mb-2" href="#memo">メモ (Memo)</a>
+                <a class="nav-link fs-5 mb-2" href="#note">ノート (Note)</a>
+                <a class="nav-link fs-5 mb-2" href="#file">ファイル (File)</a>
+                <a class="nav-link fs-5 mb-2" href="#timeline">タイムライン (Timeline)</a>
+                <a class="nav-link fs-5 mb-2" href="#trash">ゴミ箱 (Trash)</a>
+            </div>
+        </div>
+    </div>
+
+    <section id="home" class="p-5 text-center">
+        <div class="container">
+            <h2>Home</h2>
+            <p class="lead">ここはあなたのホーム画面になります。</p>
+        </div>
+    </section>
+
+    <section id="about" class="p-5">
+        <h2>Memo Application About</h2>
+        <p>タイムラインやノートを実装し、効率よくメモができるアプリを目指しています。</p>
+    </section>
+
+    <!-- ===== Memo セクション ===== -->
+    <section id="memo" class="p-5 bg-light">
+        <div class="container">
+            <h2 class="mb-4">Memo</h2>
+            <div class="row">
+                <div class="col-md-12 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body p-4">
+                            <textarea id="quick-memo-content" class="form-control mb-3 shadow-none" placeholder="ここに簡単なメモを入力..." rows="3"></textarea>
+                            <div class="text-end">
+                                <button id="btn-save-quick-memo" class="btn btn-primary">リストに保存する</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-white py-3 fw-bold">保存されたメモ</div>
+                        <ul id="quick-memo-list" class="list-group list-group-flush">
+                            <!-- JSでメモリストを描画 -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Note セクション ===== -->
+    <section id="note" class="p-5">
+        <div class="container">
+            <h2 class="mb-4">Note</h2>
+            
+            <div class="row">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-header bg-white py-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-bold">ノート一覧</span>
+                                <button id="btn-new-note" class="btn btn-sm btn-outline-primary">＋ 新規作成</button>
+                            </div>
+                            <div class="position-relative">
+                                <input type="text" id="note-search" class="form-control form-control-sm" placeholder="タイトルや #タグ で検索..." autocomplete="off">
+                                <ul id="note-search-suggestions" class="dropdown-menu w-100 shadow-sm search-suggestions" style="display: none; position: absolute; top: 100%; left: 0; z-index: 1050;"></ul>
+                            </div>
+                        </div>
+                        <div id="note-list-container" class="list-group list-group-flush" style="max-height: 500px; overflow-y: auto;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body d-flex flex-column p-4">
+                            <input type="text" id="note-title" class="form-control form-control-lg border-0 px-0 fw-bold shadow-none" placeholder="無題のノート">
+                            <input type="text" id="note-tags" class="form-control form-control-sm border-0 px-0 mb-3 shadow-none text-primary" placeholder="タグ (スペース区切りで入力 例: #企画 #アイデア)">
+                            <textarea id="note-content" class="form-control border-0 px-0 flex-grow-1 shadow-none" placeholder="ここにノートの本文を入力してください..." style="resize: none; min-height: 300px;"></textarea>
+                        </div>
+                        <div class="card-footer bg-white border-top-0 d-flex py-3">
+                            <button id="btn-delete-note" class="btn btn-outline-danger me-auto" style="display: none;">ゴミ箱に送る</button>
+                            <button id="btn-cancel-note" class="btn btn-light me-2">キャンセル</button>
+                            <button id="btn-save-note" class="btn btn-primary">保存する</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== File セクション ===== -->
+    <section id="file" class="p-5 bg-light">
+        <div class="container">
+            <h2 class="mb-4">File</h2>
+            <div class="row">
+                <div class="col-md-12 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body p-4">
+                            <label class="form-label fw-bold">ファイルの追加</label>
+                            <div class="input-group mb-2">
+                                <input type="file" class="form-control" id="file-input">
+                                <button class="btn btn-primary" type="button" id="btn-save-file">追加・保存</button>
+                            </div>
+                            <small class="text-muted">※ファイルはブラウザの保存領域（LocalStorage）に保存されます。容量上限のため、3MB以下のファイルを選択してください。</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-white py-3 fw-bold">保存されたファイル</div>
+                        <ul id="file-list" class="list-group list-group-flush">
+                            <!-- JSでファイルリストを描画 -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Trash セクション ===== -->
+    <section id="trash" class="p-5">
+        <div class="container">
+            <h2 class="mb-4">Trash (ゴミ箱)</h2>
+            <p class="text-muted small mb-4">ゴミ箱に移動したノートは、1週間（7日間）後に自動的に完全に削除されます。</p>
+            
+            <div class="row">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-header bg-white py-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-bold">ゴミ箱 (<span id="trash-count">0</span>)</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2 pt-2 border-top">
+                                <div class="form-check small m-0">
+                                    <input class="form-check-input" type="checkbox" id="chk-select-all-trash">
+                                    <label class="form-check-label text-muted" for="chk-select-all-trash">すべて選択</label>
+                                </div>
+                                <button id="btn-purge-selected" class="btn btn-sm btn-danger py-0" style="font-size: 0.8rem;">選択項目を完全に削除</button>
+                            </div>
+                            <div class="position-relative mt-2">
+                                <input type="text" id="trash-search" class="form-control form-control-sm" placeholder="タイトルや #タグ で検索..." autocomplete="off">
+                                <ul id="trash-search-suggestions" class="dropdown-menu w-100 shadow-sm search-suggestions" style="display: none; position: absolute; top: 100%; left: 0; z-index: 1050;"></ul>
+                            </div>
+                        </div>
+                        <div id="trash-list-container" class="list-group list-group-flush" style="max-height: 500px; overflow-y: auto;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body d-flex flex-column p-4 bg-light bg-opacity-50">
+                            <input type="text" id="trash-title" class="form-control form-control-lg border-0 px-0 fw-bold shadow-none bg-transparent" placeholder="選択されたノートはありません" disabled>
+                            <input type="text" id="trash-tags" class="form-control form-control-sm border-0 px-0 mb-3 shadow-none text-secondary bg-transparent" placeholder="" disabled>
+                            <textarea id="trash-content" class="form-control border-0 px-0 flex-grow-1 shadow-none bg-transparent" placeholder="" style="resize: none; min-height: 300px;" disabled></textarea>
+                        </div>
+                        <div class="card-footer bg-white border-top-0 d-flex py-3">
+                            <button id="btn-perm-delete-note" class="btn btn-danger me-auto" style="display: none;">完全に削除</button>
+                            <button id="btn-restore-note" class="btn btn-success" style="display: none;">ノートを元に戻す</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="timeline" class="p-5 bg-light">
+        <h2>Timeline</h2>
+        <p>ここにタイムライン機能のコンテンツを配置します。</p>
+    </section>
+
+    <section id="gallery" class="p-5">
+        <h2>Gallery</h2>
+        <p>Gallery section</p>
+    </section>
+
+    <section id="contact" class="p-5 bg-light">
+        <h2>Contact</h2>
+        <p>Contact section</p>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // ===== スプラッシュスクリーンの処理 =====
+            const splashScreen = document.getElementById('splash-screen');
+            setTimeout(() => {
+                splashScreen.classList.add('hidden');
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                }, 800);
+            }, 2000); 
+
+            // ==========================================
+            // 共通機能
+            // ==========================================
+            const formatDate = (dateString) => {
+                const options = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                return new Date(dateString).toLocaleDateString('ja-JP', options);
+            };
+
+            const normalizeTags = (tagsArray) => {
+                return (tagsArray || []).map(tag => tag.startsWith('#') ? tag : '#' + tag);
+            };
+
+            // ==========================================
+            // ローカルストレージのデータ (Note/Trash)
+            // ==========================================
+            let notes = JSON.parse(localStorage.getItem('memoAppNotes')) || [];
+            let currentNoteId = null;
+            let currentTrashId = null;
+
+            // Note 用 DOM
+            const noteListContainer = document.getElementById('note-list-container');
+            const noteTitleInput = document.getElementById('note-title');
+            const noteTagsInput = document.getElementById('note-tags');
+            const noteContentInput = document.getElementById('note-content');
+            const noteSearchInput = document.getElementById('note-search');
+            const noteSearchSuggestions = document.getElementById('note-search-suggestions');
+            const btnNewNote = document.getElementById('btn-new-note');
+            const btnSaveNote = document.getElementById('btn-save-note');
+            const btnDeleteNote = document.getElementById('btn-delete-note'); 
+            const btnCancelNote = document.getElementById('btn-cancel-note');
+
+            // Trash 用 DOM
+            const trashListContainer = document.getElementById('trash-list-container');
+            const trashTitleInput = document.getElementById('trash-title');
+            const trashTagsInput = document.getElementById('trash-tags');
+            const trashContentInput = document.getElementById('trash-content');
+            const trashSearchInput = document.getElementById('trash-search');
+            const trashSearchSuggestions = document.getElementById('trash-search-suggestions');
+            const trashCountSpan = document.getElementById('trash-count');
+            const chkSelectAllTrash = document.getElementById('chk-select-all-trash');
+            const btnPurgeSelected = document.getElementById('btn-purge-selected');
+            const btnRestoreNote = document.getElementById('btn-restore-note');
+            const btnPermDeleteNote = document.getElementById('btn-perm-delete-note');
+
+            // Note/Trash 用 関数
+            const updateTrashCount = () => {
+                trashCountSpan.textContent = notes.filter(n => n.inTrash).length;
+            };
+
+            const getRemainingDays = (trashAtString) => {
+                const trashTime = new Date(trashAtString).getTime();
+                const oneDayInMs = 24 * 60 * 60 * 1000;
+                const expiresAt = trashTime + (7 * oneDayInMs);
+                const remainingMs = expiresAt - Date.now();
+                const days = Math.ceil(remainingMs / oneDayInMs);
+                return days > 0 ? days : 0;
+            };
+
+            const purgeExpiredTrash = () => {
+                const oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
+                const now = Date.now();
+                let hasChanged = false;
+
+                notes = notes.filter(note => {
+                    if (note.inTrash && note.trashAt) {
+                        const trashTime = new Date(note.trashAt).getTime();
+                        if (now - trashTime > oneWeekInMs) {
+                            hasChanged = true;
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+
+                if (hasChanged) {
+                    localStorage.setItem('memoAppNotes', JSON.stringify(notes));
+                }
+            };
+
+            const setupSearchSuggest = (inputEl, suggestEl, renderFunc, isTrashMode) => {
+                inputEl.addEventListener('input', (e) => {
+                    const query = e.target.value.toLowerCase().trim();
+                    renderFunc(query); 
+
+                    if (query.length === 0) {
+                        suggestEl.style.display = 'none';
+                        return;
+                    }
+
+                    const pool = notes.filter(n => isTrashMode ? n.inTrash : !n.inTrash);
+                    const candidates = new Set();
+                    
+                    pool.forEach(n => {
+                        if (n.title && n.title.toLowerCase().includes(query)) candidates.add(n.title);
+                        normalizeTags(n.tags).forEach(tag => {
+                            if (tag.toLowerCase().includes(query)) candidates.add(tag);
+                        });
+                    });
+
+                    if (candidates.size > 0) {
+                        suggestEl.innerHTML = '';
+                        candidates.forEach(candidate => {
+                            const li = document.createElement('li');
+                            const a = document.createElement('a');
+                            a.className = 'dropdown-item text-truncate';
+                            a.href = '#';
+                            a.textContent = candidate;
+                            a.onclick = (event) => {
+                                event.preventDefault();
+                                inputEl.value = candidate;
+                                suggestEl.style.display = 'none';
+                                renderFunc(candidate);
+                            };
+                            li.appendChild(a);
+                            suggestEl.appendChild(li);
+                        });
+                        suggestEl.style.display = 'block';
+                    } else {
+                        suggestEl.style.display = 'none';
+                    }
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!inputEl.contains(e.target) && !suggestEl.contains(e.target)) {
+                        suggestEl.style.display = 'none';
+                    }
+                });
+            };
+
+            const renderNotes = (searchQuery = '') => {
+                noteListContainer.innerHTML = '';
+                let filtered = notes.filter(n => !n.inTrash);
+                
+                if (searchQuery.trim()) {
+                    const q = searchQuery.toLowerCase().trim();
+                    filtered = filtered.filter(n => {
+                        return (n.title || '').toLowerCase().includes(q) || 
+                               normalizeTags(n.tags).some(t => t.toLowerCase().includes(q));
+                    });
+                }
+
+                filtered.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+                if (filtered.length === 0) {
+                    noteListContainer.innerHTML = `<div class="p-3 text-muted text-center small">${searchQuery ? '該当なし' : 'ノートがありません'}</div>`;
+                    return;
+                }
+
+                filtered.forEach(note => {
+                    const isActive = note.id === currentNoteId ? 'active' : '';
+                    const title = note.title || '無題のノート';
+                    const preview = note.content ? note.content.substring(0, 30) + '...' : '本文なし';
+                    const tagsHtml = normalizeTags(note.tags).map(t => `<span class="badge bg-primary bg-opacity-75 me-1">${t}</span>`).join('');
+
+                    const a = document.createElement('a');
+                    a.href = '#';
+                    a.className = `list-group-item list-group-item-action p-3 ${isActive}`;
+                    a.onclick = (e) => {
+                        e.preventDefault();
+                        selectNote(note.id);
+                    };
+
+                    a.innerHTML = `
+                        <div class="d-flex w-100 justify-content-between align-items-center mb-1">
+                            <h6 class="mb-0 fw-bold text-truncate ${isActive ? '' : 'text-dark'}">${title}</h6>
+                            <small class="text-nowrap ms-2 ${isActive ? '' : 'text-secondary'}">${formatDate(note.updatedAt)}</small>
+                        </div>
+                        <div class="mb-1">${tagsHtml}</div>
+                        <p class="mb-0 text-truncate ${isActive ? '' : 'text-secondary'}" style="font-size: 0.85rem;">${preview}</p>
+                    `;
+                    noteListContainer.appendChild(a);
+                });
+            };
+
+            const selectNote = (id) => {
+                currentNoteId = id;
+                const note = notes.find(n => n.id === id);
+                if (note && !note.inTrash) {
+                    noteTitleInput.value = note.title || '';
+                    noteTagsInput.value = normalizeTags(note.tags).join(' ');
+                    noteContentInput.value = note.content || '';
+                    btnDeleteNote.style.display = 'block';
+                }
+                renderNotes(noteSearchInput.value);
+            };
+
+            const createNewNote = () => {
+                currentNoteId = null;
+                noteTitleInput.value = '';
+                noteTagsInput.value = '';
+                noteContentInput.value = '';
+                btnDeleteNote.style.display = 'none';
+                renderNotes(noteSearchInput.value);
+            };
+
+            const renderTrash = (searchQuery = '') => {
+                trashListContainer.innerHTML = '';
+                let filtered = notes.filter(n => n.inTrash);
+                
+                if (searchQuery.trim()) {
+                    const q = searchQuery.toLowerCase().trim();
+                    filtered = filtered.filter(n => {
+                        return (n.title || '').toLowerCase().includes(q) || 
+                               normalizeTags(n.tags).some(t => t.toLowerCase().includes(q));
+                    });
+                }
+
+                filtered.sort((a, b) => new Date(b.trashAt) - new Date(a.trashAt));
+
+                if (filtered.length === 0) {
+                    trashListContainer.innerHTML = `<div class="p-3 text-muted text-center small">${searchQuery ? '該当なし' : 'ゴミ箱は空です'}</div>`;
+                    chkSelectAllTrash.checked = false;
+                    return;
+                }
+
+                filtered.forEach(note => {
+                    const isActive = note.id === currentTrashId ? 'active' : '';
+                    const title = note.title || '無題のノート';
+                    const preview = note.content ? note.content.substring(0, 30) + '...' : '本文なし';
+                    const tagsHtml = normalizeTags(note.tags).map(t => `<span class="badge bg-secondary bg-opacity-75 me-1">${t}</span>`).join('');
+                    const remainingDays = getRemainingDays(note.trashAt);
+
+                    const div = document.createElement('div');
+                    div.className = `list-group-item list-group-item-action d-flex align-items-start p-3 ${isActive}`;
+                    div.style.cursor = 'pointer';
+                    div.onclick = () => selectTrash(note.id);
+
+                    div.innerHTML = `
+                        <div class="form-check me-2 pt-1" onclick="event.stopPropagation();">
+                            <input class="form-check-input trash-checkbox" type="checkbox" value="${note.id}">
+                        </div>
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="d-flex w-100 justify-content-between align-items-center mb-1">
+                                <h6 class="mb-0 fw-bold text-truncate ${isActive ? '' : 'text-dark'}">${title}</h6>
+                                <small class="text-nowrap ms-2 text-danger fw-bold">あと ${remainingDays} 日</small>
+                            </div>
+                            <div class="mb-1">${tagsHtml}</div>
+                            <p class="mb-0 text-truncate ${isActive ? '' : 'text-secondary'}" style="font-size: 0.85rem;">${preview}</p>
+                        </div>
+                    `;
+                    trashListContainer.appendChild(div);
+                });
+            };
+
+            const selectTrash = (id) => {
+                currentTrashId = id;
+                const note = notes.find(n => n.id === id);
+                if (note && note.inTrash) {
+                    trashTitleInput.value = note.title || '';
+                    trashTagsInput.value = normalizeTags(note.tags).join(' ');
+                    trashContentInput.value = note.content || '';
+                    btnRestoreNote.style.display = 'block';
+                    btnPermDeleteNote.style.display = 'block';
+                }
+                renderTrash(trashSearchInput.value);
+            };
+
+            const resetTrashView = () => {
+                currentTrashId = null;
+                trashTitleInput.value = '';
+                trashTagsInput.value = '';
+                trashContentInput.value = '';
+                btnRestoreNote.style.display = 'none';
+                btnPermDeleteNote.style.display = 'none';
+                renderTrash(trashSearchInput.value);
+            };
+
+            // Note/Trash 用 イベントリスナー
+            btnSaveNote.addEventListener('click', () => {
+                const title = noteTitleInput.value.trim();
+                const content = noteContentInput.value.trim();
+                const tags = noteTagsInput.value.split(/\s+/).map(t => t.trim()).filter(t => t !== '').map(t => t.startsWith('#') ? t : '#' + t);
+                const now = new Date().toISOString();
+
+                if (!title && !content) return alert('タイトルか本文を入力してください。');
+
+                if (currentNoteId) {
+                    const index = notes.findIndex(n => n.id === currentNoteId);
+                    if (index !== -1) {
+                        notes[index] = { ...notes[index], title, tags, content, updatedAt: now };
+                    }
+                } else {
+                    const newNote = { id: Date.now().toString(), title, tags, content, createdAt: now, updatedAt: now, inTrash: false };
+                    notes.push(newNote);
+                    currentNoteId = newNote.id;
+                }
+                localStorage.setItem('memoAppNotes', JSON.stringify(notes));
+                selectNote(currentNoteId);
+                
+                const orig = btnSaveNote.innerText;
+                btnSaveNote.innerText = '保存しました！';
+                btnSaveNote.classList.replace('btn-primary', 'btn-success');
+                setTimeout(() => { btnSaveNote.innerText = orig; btnSaveNote.classList.replace('btn-success', 'btn-primary'); }, 2000);
+            });
+
+            btnNewNote.addEventListener('click', createNewNote);
+            btnCancelNote.addEventListener('click', () => currentNoteId ? selectNote(currentNoteId) : createNewNote());
+
+            btnDeleteNote.addEventListener('click', () => {
+                if (currentNoteId && confirm('このノートをゴミ箱に移動しますか？\n(1週間後に自動削除されます)')) {
+                    const idx = notes.findIndex(n => n.id === currentNoteId);
+                    if (idx !== -1) {
+                        notes[idx].inTrash = true;
+                        notes[idx].trashAt = new Date().toISOString();
+                        localStorage.setItem('memoAppNotes', JSON.stringify(notes));
+                    }
+                    updateTrashCount();
+                    renderTrash(); 
+                    
+                    const active = notes.filter(n => !n.inTrash);
+                    if (active.length > 0) selectNote(active[0].id); else createNewNote();
+                }
+            });
+
+            btnRestoreNote.addEventListener('click', () => {
+                if (currentTrashId) {
+                    const idx = notes.findIndex(n => n.id === currentTrashId);
+                    if (idx !== -1) {
+                        notes[idx].inTrash = false;
+                        notes[idx].updatedAt = new Date().toISOString();
+                        delete notes[idx].trashAt;
+                        localStorage.setItem('memoAppNotes', JSON.stringify(notes));
+                    }
+                    updateTrashCount();
+                    renderNotes(); 
+                    
+                    const trashNotes = notes.filter(n => n.inTrash);
+                    if (trashNotes.length > 0) selectTrash(trashNotes[0].id); else resetTrashView();
+                }
+            });
+
+            btnPermDeleteNote.addEventListener('click', () => {
+                if (currentTrashId && confirm('このノートを完全に削除しますか？\nこの操作は取り消せません。')) {
+                    notes = notes.filter(n => n.id !== currentTrashId);
+                    localStorage.setItem('memoAppNotes', JSON.stringify(notes));
+                    updateTrashCount();
+                    
+                    const trashNotes = notes.filter(n => n.inTrash);
+                    if (trashNotes.length > 0) selectTrash(trashNotes[0].id); else resetTrashView();
+                }
+            });
+
+            chkSelectAllTrash.addEventListener('change', (e) => {
+                document.querySelectorAll('.trash-checkbox').forEach(cb => cb.checked = e.target.checked);
+            });
+
+            btnPurgeSelected.addEventListener('click', () => {
+                const ids = Array.from(document.querySelectorAll('.trash-checkbox:checked')).map(cb => cb.value);
+                if (ids.length === 0) return alert('削除するノートを選択してください。');
+
+                if (confirm(`選択された ${ids.length} 件のノートを完全に削除しますか？`)) {
+                    notes = notes.filter(n => !ids.includes(n.id));
+                    localStorage.setItem('memoAppNotes', JSON.stringify(notes));
+                    if (ids.includes(currentTrashId)) currentTrashId = null;
+                    chkSelectAllTrash.checked = false;
+                    updateTrashCount();
+                    
+                    const trashNotes = notes.filter(n => n.inTrash);
+                    if (trashNotes.length > 0 && !currentTrashId) selectTrash(trashNotes[0].id); else resetTrashView();
+                }
+            });
+
+            setupSearchSuggest(noteSearchInput, noteSearchSuggestions, renderNotes, false);
+            setupSearchSuggest(trashSearchInput, trashSearchSuggestions, renderTrash, true);
+
+            purgeExpiredTrash();
+            updateTrashCount();
+            
+            const activeNotes = notes.filter(n => !n.inTrash);
+            if (activeNotes.length > 0) selectNote(activeNotes[0].id); else createNewNote();
+            
+            const trashNotes = notes.filter(n => n.inTrash);
+            if (trashNotes.length > 0) selectTrash(trashNotes[0].id); else resetTrashView();
+
+
+            // ==========================================
+            // Memo機能 (アップデート: テキストファイル保存機能追加)
+            // ==========================================
+            let quickMemos = JSON.parse(localStorage.getItem('memoAppQuickMemos')) || [];
+            const memoContentInput = document.getElementById('quick-memo-content');
+            const btnSaveQuickMemo = document.getElementById('btn-save-quick-memo');
+            const quickMemoList = document.getElementById('quick-memo-list');
+
+            const renderQuickMemos = () => {
+                quickMemoList.innerHTML = '';
+                if (quickMemos.length === 0) {
+                    quickMemoList.innerHTML = '<li class="list-group-item text-muted">保存されたメモはありません</li>';
+                    return;
+                }
+                quickMemos.forEach((memo, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item d-flex justify-content-between align-items-start';
+                    li.innerHTML = `
+                        <div class="me-auto" style="white-space: pre-wrap; word-break: break-word;">${memo.content}
+                            <div class="text-muted small mt-1">${formatDate(memo.date)}</div>
+                        </div>
+                        <div class="ms-3 mt-1 d-flex flex-nowrap">
+                            <!-- 新規追加: ファイル保存（ダウンロード）ボタン -->
+                            <button class="btn btn-sm btn-outline-success me-2 text-nowrap" onclick="downloadQuickMemo(${index})" title="テキストファイルとしてダウンロード">ファイル保存</button>
+                            <button class="btn btn-sm btn-outline-danger text-nowrap" onclick="deleteQuickMemo(${index})">削除</button>
+                        </div>
+                    `;
+                    quickMemoList.appendChild(li);
+                });
+            };
+
+            window.deleteQuickMemo = (index) => {
+                if(confirm('このメモを削除しますか？')) {
+                    quickMemos.splice(index, 1);
+                    localStorage.setItem('memoAppQuickMemos', JSON.stringify(quickMemos));
+                    renderQuickMemos();
+                }
+            };
+
+            // メモの内容をテキストファイル(.txt)としてダウンロードする機能
+            window.downloadQuickMemo = (index) => {
+                const memo = quickMemos[index];
+                const blob = new Blob([memo.content], { type: 'text/plain' });
+                
+                // ファイル名を日時から自動生成 (例: memo_20240501_123045.txt)
+                const dateObj = new Date(memo.date);
+                const dateStr = dateObj.getFullYear() + 
+                                String(dateObj.getMonth() + 1).padStart(2, '0') + 
+                                String(dateObj.getDate()).padStart(2, '0') + '_' + 
+                                String(dateObj.getHours()).padStart(2, '0') + 
+                                String(dateObj.getMinutes()).padStart(2, '0') + 
+                                String(dateObj.getSeconds()).padStart(2, '0');
+                const filename = `memo_${dateStr}.txt`;
+
+                // ダウンロード用の見えないリンクを作成してクリックさせる
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            };
+
+            btnSaveQuickMemo.addEventListener('click', () => {
+                const content = memoContentInput.value.trim();
+                if(!content) return alert('メモの内容を入力してください。');
+
+                quickMemos.unshift({ 
+                    content: content, 
+                    date: new Date().toISOString() 
+                });
+                
+                localStorage.setItem('memoAppQuickMemos', JSON.stringify(quickMemos));
+                memoContentInput.value = '';
+                renderQuickMemos();
+            });
+
+            renderQuickMemos();
+
+            // ==========================================
+            // File機能
+            // ==========================================
+            let files = JSON.parse(localStorage.getItem('memoAppFiles')) || [];
+            const fileInput = document.getElementById('file-input');
+            const btnSaveFile = document.getElementById('btn-save-file');
+            const fileList = document.getElementById('file-list');
+
+            const renderFiles = () => {
+                fileList.innerHTML = '';
+                if (files.length === 0) {
+                    fileList.innerHTML = '<li class="list-group-item text-muted">保存されたファイルはありません</li>';
+                    return;
+                }
+                files.forEach((file, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                    li.innerHTML = `
+                        <div class="text-truncate me-auto" style="max-width: 80%;">
+                            <a href="${file.dataURL}" download="${file.name}" class="text-decoration-none fw-bold" title="${file.name}">${file.name}</a>
+                            <div class="text-muted small mt-1">${(file.size / 1024).toFixed(1)} KB / 追加日: ${formatDate(file.date)}</div>
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger ms-2" onclick="deleteFile(${index})">削除</button>
+                    `;
+                    fileList.appendChild(li);
+                });
+            };
+
+            window.deleteFile = (index) => {
+                if (confirm('このファイルを削除しますか？')) {
+                    files.splice(index, 1);
+                    localStorage.setItem('memoAppFiles', JSON.stringify(files));
+                    renderFiles();
+                }
+            };
+
+            btnSaveFile.addEventListener('click', () => {
+                const file = fileInput.files[0];
+                if (!file) return alert('ファイルを選択してください。');
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const dataURL = e.target.result;
+
+                    // LocalStorageの制限を考慮し、3MB以上のファイルはブロック
+                    if (dataURL.length > 3 * 1024 * 1024) {
+                        fileInput.value = '';
+                        return alert('ファイルサイズが大きすぎます。3MB以下のファイルを選択してください。');
+                    }
+
+                    files.unshift({
+                        id: Date.now().toString(),
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        dataURL: dataURL,
+                        date: new Date().toISOString()
+                    });
+
+                    try {
+                        localStorage.setItem('memoAppFiles', JSON.stringify(files));
+                        fileInput.value = '';
+                        renderFiles();
+                    } catch (err) {
+                        alert('保存容量の上限に達しました。不要なファイルやデータを削除してください。');
+                        files.shift(); 
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+
+            renderFiles();
+
+        });
+    </script>
+</body>
+</html>
