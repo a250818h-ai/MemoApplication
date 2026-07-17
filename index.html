@@ -78,6 +78,17 @@
             position: relative;
             z-index: 1;
         }
+
+        /* クリック可能なメモ項目のホバーエフェクト */
+        .memo-item-content {
+            cursor: pointer;
+            transition: background-color 0.2s;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+        }
+        .memo-item-content:hover {
+            background-color: rgba(0,0,0,0.03);
+        }
     </style>
 </head>
 
@@ -690,7 +701,7 @@
 
 
             // ==========================================
-            // Memo & Folder 機能 (自動保存＋フォルダ移行)
+            // Memo & Folder 機能 (自動保存＋編集・削除)
             // ==========================================
             let quickMemos = JSON.parse(localStorage.getItem('memoAppQuickMemos')) || [];
             let currentQuickMemoId = null;
@@ -721,16 +732,17 @@
                     quickMemoList.innerHTML = '<li class="list-group-item text-muted">保存されたメモはありません</li>';
                     return;
                 }
-                quickMemos.forEach((memo, index) => {
+                quickMemos.forEach((memo) => {
                     const li = document.createElement('li');
                     li.className = 'list-group-item d-flex justify-content-between align-items-start';
                     li.innerHTML = `
-                        <div class="me-auto w-100" style="white-space: pre-wrap; word-break: break-word;">
+                        <div class="me-auto w-100 memo-item-content" onclick="editQuickMemo('${memo.id}')" title="クリックして編集">
                             <span class="badge bg-secondary mb-1">📁 ${memo.folder || 'デフォルト'}</span><br>
                             ${memo.content}
                             <div class="text-muted small mt-2">${formatDate(memo.date)}</div>
                         </div>
-                        <div class="ms-3 mt-1 d-flex flex-nowrap">
+                        <div class="ms-3 mt-1 d-flex flex-nowrap gap-2">
+                            <button class="btn btn-sm btn-outline-primary text-nowrap" onclick="editQuickMemo('${memo.id}')">編集</button>
                             <button class="btn btn-sm btn-outline-danger text-nowrap" onclick="deleteQuickMemo('${memo.id}')">削除</button>
                         </div>
                     `;
@@ -772,12 +784,13 @@
                     const li = document.createElement('li');
                     li.className = 'list-group-item d-flex justify-content-between align-items-start p-3';
                     li.innerHTML = `
-                        <div class="me-auto w-100" style="white-space: pre-wrap; word-break: break-word;">
+                        <div class="me-auto w-100 memo-item-content" onclick="editQuickMemo('${memo.id}')" title="クリックして編集">
                             ${memo.content}
                             <div class="text-muted small mt-2">${formatDate(memo.date)}</div>
                         </div>
-                        <div class="ms-3 mt-1">
-                            <button class="btn btn-sm btn-outline-danger" onclick="deleteQuickMemo('${memo.id}')">削除</button>
+                        <div class="ms-3 mt-1 d-flex flex-nowrap gap-2">
+                            <button class="btn btn-sm btn-outline-primary text-nowrap" onclick="editQuickMemo('${memo.id}')">編集</button>
+                            <button class="btn btn-sm btn-outline-danger text-nowrap" onclick="deleteQuickMemo('${memo.id}')">削除</button>
                         </div>
                     `;
                     folderMemoList.appendChild(li);
@@ -821,6 +834,22 @@
                 setTimeout(() => { autosaveIndicator.style.opacity = '0'; }, 2000);
             };
 
+            // メモを編集モードで開く
+            window.editQuickMemo = (id) => {
+                const memo = quickMemos.find(m => m.id === id);
+                if (memo) {
+                    currentQuickMemoId = memo.id;
+                    memoContentInput.value = memo.content;
+                    memoFolderSelect.value = memo.folder || 'デフォルト';
+                    
+                    // 入力エリアまでスムーズにスクロール
+                    document.getElementById('memo').scrollIntoView({ behavior: 'smooth' });
+                    // テキストエリアにフォーカスを当てる
+                    memoContentInput.focus();
+                }
+            };
+
+            // メモを削除する
             window.deleteQuickMemo = (id) => {
                 if(confirm('このメモを削除しますか？')) {
                     quickMemos = quickMemos.filter(m => m.id !== id);
