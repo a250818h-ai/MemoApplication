@@ -89,6 +89,63 @@
         .memo-item-content:hover {
             background-color: rgba(0,0,0,0.03);
         }
+
+        /* ===== カレンダー用のスタイル ===== */
+        .calendar-row {
+            display: flex;
+            width: 100%;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .calendar-cell {
+            flex: 1 1 0;
+            min-width: 0;
+            box-sizing: border-box;
+            border-right: 1px solid #dee2e6;
+            height: 120px;
+            padding: 5px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: background-color 0.2s;
+        }
+        .calendar-cell:first-child {
+            border-left: 1px solid #dee2e6;
+        }
+        .calendar-cell.header {
+            height: auto;
+            border: none;
+            padding: 10px 0;
+            border-right: 1px solid transparent; /* 位置合わせ用 */
+        }
+        .calendar-cell.date-cell {
+            cursor: pointer;
+        }
+        .calendar-cell.date-cell:not(.empty):hover {
+            background-color: #f1f3f5;
+        }
+        .calendar-cell.empty {
+            background-color: #f8f9fa;
+            cursor: default;
+        }
+        .calendar-day-number {
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+        .calendar-today {
+            background-color: #e6f2ff;
+        }
+        .calendar-memo-preview {
+            font-size: 0.75rem;
+            color: #495057;
+            white-space: pre-wrap;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 4; /* 最大4行表示 */
+            line-clamp: 4;
+            -webkit-box-orient: vertical;
+            word-break: break-all;
+        }
     </style>
 </head>
 
@@ -117,6 +174,7 @@
                 <div class="navbar-nav me-auto">
                     <a class="nav-link" href="#home">Home</a>
                     <a class="nav-link" href="#about">About</a>
+                    <a class="nav-link" href="#calendar">Calendar</a> <!-- 追記 -->
                     <a class="nav-link" href="#memo">Memo</a>
                     <a class="nav-link" href="#note">Note</a>
                     <a class="nav-link" href="#folder">Folder</a>
@@ -134,6 +192,7 @@
         </div>
         <div class="offcanvas-body">
             <div class="navbar-nav">
+                <a class="nav-link fs-5 mb-2" href="#calendar">カレンダー (Calendar)</a> <!-- 追記 -->
                 <a class="nav-link fs-5 mb-2" href="#memo">メモ (Memo)</a>
                 <a class="nav-link fs-5 mb-2" href="#note">ノート (Note)</a>
                 <a class="nav-link fs-5 mb-2" href="#folder">フォルダ (Folder)</a>
@@ -155,8 +214,55 @@
         <p>タイムラインやノートを実装し、効率よくメモができるアプリを目指しています。</p>
     </section>
 
+    <!-- ===== Calendar セクション ===== -->
+    <section id="calendar" class="p-5 bg-light">
+        <div class="container">
+            <h2 class="mb-4">Calendar</h2>
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <button id="btn-prev-month" class="btn btn-outline-primary btn-sm px-3">&lt; 前月</button>
+                    <h4 id="calendar-month-year" class="mb-0 fw-bold mx-3"></h4>
+                    <button id="btn-next-month" class="btn btn-outline-primary btn-sm px-3">次月 &gt;</button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="calendar-row text-center fw-bold bg-light py-2 border-top">
+                        <div class="calendar-cell header text-danger">日</div>
+                        <div class="calendar-cell header">月</div>
+                        <div class="calendar-cell header">火</div>
+                        <div class="calendar-cell header">水</div>
+                        <div class="calendar-cell header">木</div>
+                        <div class="calendar-cell header">金</div>
+                        <div class="calendar-cell header text-primary">土</div>
+                    </div>
+                    <!-- カレンダー本体 -->
+                    <div id="calendar-grid" class="border-top-0"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== カレンダーメモ用モーダル ===== -->
+    <div class="modal fade" id="calendarMemoModal" tabindex="-1" aria-labelledby="calendarMemoModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold" id="calendarMemoModalLabel"></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
+          </div>
+          <div class="modal-body">
+            <textarea id="calendar-memo-content" class="form-control" rows="6" placeholder="この日の予定やメモを入力してください..."></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+            <button type="button" class="btn btn-primary" id="btn-save-calendar-memo">保存する</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
     <!-- ===== Memo セクション (自動保存) ===== -->
-    <section id="memo" class="p-5 bg-light">
+    <section id="memo" class="p-5">
         <div class="container">
             <h2 class="mb-4">Memo (自動保存)</h2>
             <div class="row">
@@ -195,7 +301,8 @@
     </section>
 
     <!-- ===== Note セクション ===== -->
-    <section id="note" class="p-5">
+    <section id="note" class="p-5 bg-light">
+        <!-- 省略せずそのまま -->
         <div class="container">
             <h2 class="mb-4">Note</h2>
             
@@ -236,7 +343,7 @@
     </section>
 
     <!-- ===== Folder セクション ===== -->
-    <section id="folder" class="p-5 bg-light">
+    <section id="folder" class="p-5">
         <div class="container">
             <h2 class="mb-4">Folder</h2>
             <div class="row">
@@ -260,7 +367,7 @@
     </section>
 
     <!-- ===== Trash セクション ===== -->
-    <section id="trash" class="p-5">
+    <section id="trash" class="p-5 bg-light">
         <div class="container">
             <h2 class="mb-4">Trash (ゴミ箱)</h2>
             <p class="text-muted small mb-4">ゴミ箱に移動したノートは、1週間（7日間）後に自動的に完全に削除されます。</p>
@@ -306,7 +413,7 @@
         </div>
     </section>
 
-    <section id="timeline" class="p-5 bg-light">
+    <section id="timeline" class="p-5">
         <h2>Timeline</h2>
         <p>ここにタイムライン機能のコンテンツを配置します。</p>
     </section>
@@ -333,14 +440,156 @@
                 return new Date(dateString).toLocaleDateString('ja-JP', options);
             };
 
+            const escapeHtml = (value = '') => {
+                return String(value)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            };
+
+            const safeStorageParse = (key, fallback) => {
+                try {
+                    const raw = localStorage.getItem(key);
+                    return raw ? JSON.parse(raw) : fallback;
+                } catch (error) {
+                    console.warn(`Failed to parse localStorage:${key}`, error);
+                    return fallback;
+                }
+            };
+
             const normalizeTags = (tagsArray) => {
                 return (tagsArray || []).map(tag => tag.startsWith('#') ? tag : '#' + tag);
             };
 
             // ==========================================
+            // カレンダー機能
+            // ==========================================
+            let calendarCurrentDate = new Date(); // 現在表示している月
+            let calendarMemos = safeStorageParse('memoAppCalendarMemos', {}); // { 'YYYY-MM-DD': 'メモ内容' }
+            let calendarSelectedDateStr = null;
+
+            const calendarGrid = document.getElementById('calendar-grid');
+            const calendarMonthYear = document.getElementById('calendar-month-year');
+            const btnPrevMonth = document.getElementById('btn-prev-month');
+            const btnNextMonth = document.getElementById('btn-next-month');
+            
+            const calendarMemoModalElement = document.getElementById('calendarMemoModal');
+            let calendarMemoModal;
+            if (calendarMemoModalElement) {
+                calendarMemoModal = new bootstrap.Modal(calendarMemoModalElement);
+            }
+            const modalLabel = document.getElementById('calendarMemoModalLabel');
+            const calendarMemoContent = document.getElementById('calendar-memo-content');
+            const btnSaveCalendarMemo = document.getElementById('btn-save-calendar-memo');
+
+            const renderCalendar = () => {
+                calendarGrid.innerHTML = '';
+                const year = calendarCurrentDate.getFullYear();
+                const month = calendarCurrentDate.getMonth();
+                
+                calendarMonthYear.textContent = `${year}年 ${month + 1}月`;
+                
+                // その月の1日の曜日と、日数を取得
+                const firstDayIndex = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                
+                let row = document.createElement('div');
+                row.className = 'calendar-row';
+                
+                // 1日までの空白セルを埋める
+                for (let i = 0; i < firstDayIndex; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'calendar-cell empty';
+                    row.appendChild(cell);
+                }
+                
+                // 日付セルを作成
+                for (let day = 1; day <= daysInMonth; day++) {
+                    if (row.children.length === 7) {
+                        calendarGrid.appendChild(row);
+                        row = document.createElement('div');
+                        row.className = 'calendar-row';
+                    }
+                    
+                    const cell = document.createElement('div');
+                    cell.className = 'calendar-cell date-cell';
+                    
+                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    
+                    // 日曜(0)は赤、土曜(6)は青に
+                    const dayOfWeek = new Date(year, month, day).getDay();
+                    const dayColor = dayOfWeek === 0 ? 'text-danger' : (dayOfWeek === 6 ? 'text-primary' : '');
+
+                    // 今日の日付をハイライト
+                    const today = new Date();
+                    if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                        cell.classList.add('calendar-today');
+                    }
+                    
+                    // 保存されているメモがあればプレビュー表示
+                    let previewHtml = '';
+                    if (calendarMemos[dateStr]) {
+                        previewHtml = `<div class="calendar-memo-preview">${escapeHtml(calendarMemos[dateStr])}</div>`;
+                    }
+                    
+                    cell.innerHTML = `
+                        <div class="calendar-day-number ${dayColor}">${day}</div>
+                        ${previewHtml}
+                    `;
+                    
+                    // セルクリック時の挙動
+                    cell.onclick = () => {
+                        calendarSelectedDateStr = dateStr;
+                        modalLabel.textContent = `${year}年 ${month + 1}月 ${day}日 のメモ`;
+                        calendarMemoContent.value = calendarMemos[dateStr] || '';
+                        calendarMemoModal.show();
+                    };
+                    
+                    row.appendChild(cell);
+                }
+                
+                // 最終行の残りの空白セルを埋める
+                while (row.children.length < 7) {
+                    const cell = document.createElement('div');
+                    cell.className = 'calendar-cell empty';
+                    row.appendChild(cell);
+                }
+                calendarGrid.appendChild(row);
+            };
+
+            // 月送りボタン
+            btnPrevMonth.addEventListener('click', () => {
+                calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() - 1);
+                renderCalendar();
+            });
+            btnNextMonth.addEventListener('click', () => {
+                calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + 1);
+                renderCalendar();
+            });
+
+            // メモ保存ボタン
+            btnSaveCalendarMemo.addEventListener('click', () => {
+                const content = calendarMemoContent.value.trim();
+                if (content) {
+                    calendarMemos[calendarSelectedDateStr] = content;
+                } else {
+                    delete calendarMemos[calendarSelectedDateStr]; // 空なら削除
+                }
+                localStorage.setItem('memoAppCalendarMemos', JSON.stringify(calendarMemos));
+                calendarMemoModal.hide();
+                renderCalendar();
+            });
+
+            // 初回カレンダー描画
+            renderCalendar();
+
+
+            // ==========================================
             // ローカルストレージのデータ (Note/Trash)
             // ==========================================
-            let notes = JSON.parse(localStorage.getItem('memoAppNotes')) || [];
+            let notes = safeStorageParse('memoAppNotes', []);
             let currentNoteId = null;
             let currentTrashId = null;
 
@@ -477,7 +726,7 @@
                     const isActive = note.id === currentNoteId ? 'active' : '';
                     const title = note.title || '無題のノート';
                     const preview = note.content ? note.content.substring(0, 30) + '...' : '本文なし';
-                    const tagsHtml = normalizeTags(note.tags).map(t => `<span class="badge bg-primary bg-opacity-75 me-1">${t}</span>`).join('');
+                    const tagsHtml = normalizeTags(note.tags).map(t => `<span class="badge bg-primary bg-opacity-75 me-1">${escapeHtml(t)}</span>`).join('');
 
                     const a = document.createElement('a');
                     a.href = '#';
@@ -489,11 +738,11 @@
 
                     a.innerHTML = `
                         <div class="d-flex w-100 justify-content-between align-items-center mb-1">
-                            <h6 class="mb-0 fw-bold text-truncate ${isActive ? '' : 'text-dark'}">${title}</h6>
+                            <h6 class="mb-0 fw-bold text-truncate ${isActive ? '' : 'text-dark'}">${escapeHtml(title)}</h6>
                             <small class="text-nowrap ms-2 ${isActive ? '' : 'text-secondary'}">${formatDate(note.updatedAt)}</small>
                         </div>
                         <div class="mb-1">${tagsHtml}</div>
-                        <p class="mb-0 text-truncate ${isActive ? '' : 'text-secondary'}" style="font-size: 0.85rem;">${preview}</p>
+                        <p class="mb-0 text-truncate ${isActive ? '' : 'text-secondary'}" style="font-size: 0.85rem;">${escapeHtml(preview)}</p>
                     `;
                     noteListContainer.appendChild(a);
                 });
@@ -544,7 +793,7 @@
                     const isActive = note.id === currentTrashId ? 'active' : '';
                     const title = note.title || '無題のノート';
                     const preview = note.content ? note.content.substring(0, 30) + '...' : '本文なし';
-                    const tagsHtml = normalizeTags(note.tags).map(t => `<span class="badge bg-secondary bg-opacity-75 me-1">${t}</span>`).join('');
+                    const tagsHtml = normalizeTags(note.tags).map(t => `<span class="badge bg-secondary bg-opacity-75 me-1">${escapeHtml(t)}</span>`).join('');
                     const remainingDays = getRemainingDays(note.trashAt);
 
                     const div = document.createElement('div');
@@ -558,11 +807,11 @@
                         </div>
                         <div class="flex-grow-1 min-w-0">
                             <div class="d-flex w-100 justify-content-between align-items-center mb-1">
-                                <h6 class="mb-0 fw-bold text-truncate ${isActive ? '' : 'text-dark'}">${title}</h6>
+                                <h6 class="mb-0 fw-bold text-truncate ${isActive ? '' : 'text-dark'}">${escapeHtml(title)}</h6>
                                 <small class="text-nowrap ms-2 text-danger fw-bold">あと ${remainingDays} 日</small>
                             </div>
                             <div class="mb-1">${tagsHtml}</div>
-                            <p class="mb-0 text-truncate ${isActive ? '' : 'text-secondary'}" style="font-size: 0.85rem;">${preview}</p>
+                            <p class="mb-0 text-truncate ${isActive ? '' : 'text-secondary'}" style="font-size: 0.85rem;">${escapeHtml(preview)}</p>
                         </div>
                     `;
                     trashListContainer.appendChild(div);
@@ -703,7 +952,7 @@
             // ==========================================
             // Memo & Folder 機能 (自動保存＋編集・削除)
             // ==========================================
-            let quickMemos = JSON.parse(localStorage.getItem('memoAppQuickMemos')) || [];
+            let quickMemos = safeStorageParse('memoAppQuickMemos', []);
             let currentQuickMemoId = null;
             let activeFolder = 'デフォルト';
 
@@ -737,8 +986,8 @@
                     li.className = 'list-group-item d-flex justify-content-between align-items-start';
                     li.innerHTML = `
                         <div class="me-auto w-100 memo-item-content" onclick="editQuickMemo('${memo.id}')" title="クリックして編集">
-                            <span class="badge bg-secondary mb-1">📁 ${memo.folder || 'デフォルト'}</span><br>
-                            ${memo.content}
+                            <span class="badge bg-secondary mb-1">📁 ${escapeHtml(memo.folder || 'デフォルト')}</span><br>
+                            ${escapeHtml(memo.content)}
                             <div class="text-muted small mt-2">${formatDate(memo.date)}</div>
                         </div>
                         <div class="ms-3 mt-1 d-flex flex-nowrap gap-2">
@@ -785,7 +1034,7 @@
                     li.className = 'list-group-item d-flex justify-content-between align-items-start p-3';
                     li.innerHTML = `
                         <div class="me-auto w-100 memo-item-content" onclick="editQuickMemo('${memo.id}')" title="クリックして編集">
-                            ${memo.content}
+                            ${escapeHtml(memo.content)}
                             <div class="text-muted small mt-2">${formatDate(memo.date)}</div>
                         </div>
                         <div class="ms-3 mt-1 d-flex flex-nowrap gap-2">
