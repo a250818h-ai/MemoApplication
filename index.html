@@ -174,7 +174,6 @@
                 <div class="navbar-nav me-auto">
                     <a class="nav-link" href="#home">Home</a>
                     <a class="nav-link" href="#about">About</a>
-                    <a class="nav-link" href="#calendar">Calendar</a> <!-- 追記 -->
                     <a class="nav-link" href="#memo">Memo</a>
                     <a class="nav-link" href="#note">Note</a>
                     <a class="nav-link" href="#folder">Folder</a>
@@ -192,7 +191,6 @@
         </div>
         <div class="offcanvas-body">
             <div class="navbar-nav">
-                <a class="nav-link fs-5 mb-2" href="#calendar">カレンダー (Calendar)</a> <!-- 追記 -->
                 <a class="nav-link fs-5 mb-2" href="#memo">メモ (Memo)</a>
                 <a class="nav-link fs-5 mb-2" href="#note">ノート (Note)</a>
                 <a class="nav-link fs-5 mb-2" href="#folder">フォルダ (Folder)</a>
@@ -212,33 +210,6 @@
     <section id="about" class="p-5">
         <h2>Memo Application About</h2>
         <p>タイムラインやノートを実装し、効率よくメモができるアプリを目指しています。</p>
-    </section>
-
-    <!-- ===== Calendar セクション ===== -->
-    <section id="calendar" class="p-5 bg-light">
-        <div class="container">
-            <h2 class="mb-4">Calendar</h2>
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                    <button id="btn-prev-month" class="btn btn-outline-primary btn-sm px-3">&lt; 前月</button>
-                    <h4 id="calendar-month-year" class="mb-0 fw-bold mx-3"></h4>
-                    <button id="btn-next-month" class="btn btn-outline-primary btn-sm px-3">次月 &gt;</button>
-                </div>
-                <div class="card-body p-0">
-                    <div class="calendar-row text-center fw-bold bg-light py-2 border-top">
-                        <div class="calendar-cell header text-danger">日</div>
-                        <div class="calendar-cell header">月</div>
-                        <div class="calendar-cell header">火</div>
-                        <div class="calendar-cell header">水</div>
-                        <div class="calendar-cell header">木</div>
-                        <div class="calendar-cell header">金</div>
-                        <div class="calendar-cell header text-primary">土</div>
-                    </div>
-                    <!-- カレンダー本体 -->
-                    <div id="calendar-grid" class="border-top-0"></div>
-                </div>
-            </div>
-        </div>
     </section>
 
     <!-- ===== カレンダーメモ用モーダル ===== -->
@@ -302,7 +273,6 @@
 
     <!-- ===== Note セクション ===== -->
     <section id="note" class="p-5 bg-light">
-        <!-- 省略せずそのまま -->
         <div class="container">
             <h2 class="mb-4">Note</h2>
             
@@ -413,9 +383,31 @@
         </div>
     </section>
 
-    <section id="timeline" class="p-5">
-        <h2>Timeline</h2>
-        <p>ここにタイムライン機能のコンテンツを配置します。</p>
+    <!-- ===== Timeline セクション (カレンダー機能実装) ===== -->
+    <section id="timeline" class="p-5 bg-light">
+        <div class="container">
+            <h2 class="mb-4">Timeline</h2>
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <button id="btn-prev-month" class="btn btn-outline-primary btn-sm px-3">&lt; 前月</button>
+                    <h4 id="calendar-month-year" class="mb-0 fw-bold mx-3"></h4>
+                    <button id="btn-next-month" class="btn btn-outline-primary btn-sm px-3">次月 &gt;</button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="calendar-row text-center fw-bold bg-light py-2 border-top">
+                        <div class="calendar-cell header text-danger">日</div>
+                        <div class="calendar-cell header">月</div>
+                        <div class="calendar-cell header">火</div>
+                        <div class="calendar-cell header">水</div>
+                        <div class="calendar-cell header">木</div>
+                        <div class="calendar-cell header">金</div>
+                        <div class="calendar-cell header text-primary">土</div>
+                    </div>
+                    <!-- カレンダー本体 -->
+                    <div id="calendar-grid" class="border-top-0"></div>
+                </div>
+            </div>
+        </div>
     </section>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
